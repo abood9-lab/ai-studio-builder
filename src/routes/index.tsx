@@ -3,7 +3,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   ArrowUp,
-  Check,
   Code2,
   Cpu,
   Eye,
@@ -80,6 +79,15 @@ const IDEAS = [
   "Personal portfolio",
   "Task manager dashboard",
 ];
+
+const MODELS = ["GPT", "Claude", "Gemini", "Llama", "DeepSeek", "Mistral", "Qwen", "Groq", "OpenRouter"];
+
+const STATS = [
+  ["< 60s", "From prompt to preview"],
+  ["100+", "AI models to choose from"],
+  ["3", "Device previews"],
+  ["24/7", "Cloud terminal"],
+] as const;
 
 const STEPS = [
   ["Describe", "Write what you want in plain words, in any language."],
@@ -196,7 +204,7 @@ function Index() {
 
       <section className="app-backdrop relative overflow-hidden px-5 pb-16 pt-20 sm:pt-28">
         <div aria-hidden className="hero-aurora pointer-events-none absolute inset-0" />
-        <div className="relative mx-auto max-w-3xl text-center">
+        <div className="reveal-up relative mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
@@ -292,99 +300,108 @@ function Index() {
           </div>
         </div>
 
-        <div id="product" className="relative mx-auto mt-20 max-w-5xl scroll-mt-24">
-          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-elevated">
-            <div className="flex items-center gap-2 border-b border-border bg-secondary/60 px-4 py-2.5">
-              <span className="size-2.5 rounded-full bg-destructive/70" />
-              <span className="size-2.5 rounded-full bg-warning/80" />
-              <span className="size-2.5 rounded-full bg-success/80" />
-              <span className="ml-3 rounded-md border border-border bg-background px-3 py-0.5 font-mono text-[11px] text-muted-foreground">
-                whiterchat / workspace
-              </span>
-            </div>
-            <div className="grid md:grid-cols-[1fr_1.35fr]">
-              <div className="space-y-3 border-b border-border p-5 text-left md:border-b-0 md:border-r">
-                <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2 text-xs text-primary-foreground">
-                  A booking page for a coffee shop
-                </p>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  Building a warm, mobile-first booking page with a menu and a reservation form.
-                </p>
-                <div className="rounded-xl border border-border bg-background p-3 font-mono text-[11px]">
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Check className="size-3 text-success" /> index.html
-                  </p>
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Check className="size-3 text-success" /> styles.css
-                  </p>
-                  <p className="flex items-center gap-2 text-foreground">
-                    <span className="size-1.5 animate-pulse rounded-full bg-primary" /> app.js{" "}
-                    <span className="text-primary">writing…</span>
-                  </p>
-                </div>
-              </div>
-              <div
-                className="bg-terminal p-5 text-left font-mono text-[11.5px] leading-6 text-terminal-foreground"
-                dir="ltr"
-              >
-                <p>
-                  <span className="text-terminal-muted">12</span> const form =
-                  document.querySelector(<span className="text-terminal-accent">"#booking"</span>);
-                </p>
-                <p>
-                  <span className="text-terminal-muted">13</span> form.addEventListener(
-                  <span className="text-terminal-accent">"submit"</span>, (event) =&gt; {"{"}
-                </p>
-                <p>
-                  <span className="text-terminal-muted">14</span> event.preventDefault();
-                </p>
-                <p>
-                  <span className="text-terminal-muted">15</span> confirmTable(new FormData(form));
-                  <span className="live-caret" />
-                </p>
-                <div className="mt-4 border-t border-terminal-border pt-3">
-                  <p>
-                    <span className="text-terminal-accent">~/workspace $</span> npm install
-                  </p>
-                  <p className="text-terminal-muted">added 42 packages in 3s</p>
-                </div>
-              </div>
-            </div>
+        <div id="product" className="reveal-up relative mx-auto mt-20 max-w-5xl scroll-mt-24" style={{ animationDelay: "200ms" }}>
+          <div aria-hidden className="hero-glow-ring absolute -inset-10 rounded-full" />
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-elevated">
+            <video
+              src="/videos/build-demo.mp4"
+              poster="/videos/build-demo.jpg"
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-label="Demo: a prompt is sent, the AI writes the code and the site appears in the live preview"
+              className="block aspect-[1280/760] w-full rounded-2xl bg-card object-cover"
+            />
           </div>
         </div>
       </section>
 
-      <section id="features" className="scroll-mt-20 border-t border-border px-5 py-24">
+      <section aria-label="Supported AI" className="border-y border-border bg-card/40 py-8">
+        <p className="text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+          Powered by the best models
+        </p>
+        <div className="marquee mt-5 overflow-hidden">
+          <div className="marquee-track flex w-max gap-12 pr-12">
+            {[...MODELS, ...MODELS].map((m, i) => (
+              <span key={i} className="whitespace-nowrap text-lg font-semibold text-muted-foreground/70">
+                {m}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-20">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 text-center md:grid-cols-4">
+          {STATS.map(([n, l]) => (
+            <div key={l}>
+              <p className="stat-number text-4xl font-bold tracking-tighter sm:text-5xl">{n}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{l}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="features" className="scroll-mt-20 px-5 pb-24">
         <div className="mx-auto max-w-6xl">
-          <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Everything between the idea and the running app.
+          <p className="font-mono text-xs text-primary">// features</p>
+          <h2 className="mt-3 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+            Everything between the idea and <span className="text-gradient">the running app.</span>
           </h2>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, text }) => (
+          <div className="mt-12 grid auto-rows-[minmax(200px,auto)] gap-4 md:grid-cols-3">
+            {FEATURES.map(({ icon: Icon, title, text }, i) => (
               <article
                 key={title}
-                className="rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/40 hover:shadow-glow"
+                onMouseMove={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                }}
+                className={`bento-card flex flex-col p-7 ${i === 0 || i === 3 || i === 5 ? "md:col-span-2" : ""}`}
               >
-                <span className="flex size-10 items-center justify-center rounded-xl bg-brand-accent-soft text-primary">
+                <span className="send-orb relative flex size-11 items-center justify-center rounded-2xl text-primary-foreground">
                   <Icon className="size-5" />
                 </span>
-                <h3 className="mt-5 text-base font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
+                <h3 className="relative mt-auto pt-8 text-xl font-semibold tracking-tight">{title}</h3>
+                <p className="relative mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="how" className="scroll-mt-20 border-t border-border bg-secondary/40 px-5 py-24">
-        <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
-          {STEPS.map(([title, text], index) => (
-            <div key={title}>
-              <span className="font-mono text-sm text-primary">0{index + 1}</span>
-              <h3 className="mt-3 text-xl font-semibold tracking-tight">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
-            </div>
-          ))}
+      <section id="how" className="scroll-mt-20 border-t border-border px-5 py-24">
+        <div className="mx-auto max-w-6xl">
+          <p className="font-mono text-xs text-primary">// how it works</p>
+          <h2 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">From words to a live app in three steps.</h2>
+          <div className="relative mt-14 grid gap-6 md:grid-cols-3">
+            <div aria-hidden className="absolute left-0 right-0 top-6 hidden h-px bg-linear-to-r from-transparent via-primary/50 to-transparent md:block" />
+            {STEPS.map(([title, text], index) => (
+              <div key={title} className="relative">
+                <span className="send-orb relative flex size-12 items-center justify-center rounded-full font-mono text-sm font-bold text-primary-foreground">
+                  0{index + 1}
+                </span>
+                <h3 className="mt-5 text-xl font-semibold tracking-tight">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 pb-24">
+        <div className="hero-aurora relative mx-auto max-w-5xl overflow-hidden rounded-[2rem] border border-border bg-card px-6 py-16 text-center shadow-elevated">
+          <h2 className="text-4xl font-bold tracking-tight sm:text-6xl">
+            Your next app is <span className="text-gradient">one prompt away.</span>
+          </h2>
+          <p className="mx-auto mt-4 max-w-md text-muted-foreground">Start free. No setup, no credit card.</p>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="send-orb mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
+          >
+            Start building <ArrowRight className="size-4" />
+          </button>
         </div>
       </section>
 

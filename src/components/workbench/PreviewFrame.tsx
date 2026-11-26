@@ -10,6 +10,8 @@ import {
   Tablet,
   TerminalSquare,
   Trash2,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { buildPreviewHtml, listPreviewPages } from "@/lib/artifact-parser";
 import { answerCloudCall, type CloudConnection } from "@/lib/cloud-bridge";
@@ -160,6 +162,7 @@ export function PreviewFrame({
     });
   };
 
+  const hasFiles = Object.keys(files).length > 0;
   const errorCount = logs.filter((entry) => entry.level === "error").length;
   const frameSize = device === "desktop" ? null : DEVICES[device];
   const scale =
@@ -196,7 +199,7 @@ export function PreviewFrame({
           : "flex min-h-0 flex-1 flex-col"
       }
     >
-      <div className="flex items-center gap-2 border-b border-border bg-secondary/60 px-3 py-2">
+      <div className="flex items-center gap-2 border-b border-border bg-card/80 px-3 py-2 backdrop-blur">
         <div className="hidden items-center gap-1.5 sm:flex" aria-hidden="true">
           <span className="size-2.5 rounded-full bg-destructive/70" />
           <span className="size-2.5 rounded-full bg-warning/80" />
@@ -211,7 +214,7 @@ export function PreviewFrame({
         >
           <RotateCw className="size-3.5" />
         </button>
-        <div className="flex h-7 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 text-xs text-muted-foreground">
+        <div className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-background/80 px-3.5 shadow-inner text-xs text-muted-foreground">
           <Lock className="size-3 shrink-0 text-success" />
           <span className="hidden shrink-0 sm:inline">preview</span>
           <span className="hidden sm:inline">/</span>
@@ -299,9 +302,30 @@ export function PreviewFrame({
 
       <div
         ref={stageRef}
-        className="app-backdrop relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-canvas"
+        className="preview-stage relative flex min-h-0 flex-1 items-center justify-center overflow-hidden p-3 sm:p-5"
       >
-        {frameSize ? (
+        {!hasFiles ? (
+          <div className="relative z-10 flex max-w-sm flex-col items-center text-center">
+            <div className="preview-orb relative flex size-20 items-center justify-center rounded-3xl">
+              <Sparkles className="size-8 text-primary-foreground" />
+            </div>
+            <h3 className="mt-6 text-lg font-semibold tracking-tight text-foreground">
+              {building ? "Building your app…" : "Your app will appear here"}
+            </h3>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              {building
+                ? "Writing files and wiring everything together. The live preview opens as soon as it's ready."
+                : "Describe what you want in the chat and watch it come to life, live."}
+            </p>
+            {building && (
+              <div className="mt-6 w-full space-y-2">
+                {[72, 100, 56].map((w, i) => (
+                  <div key={i} className="preview-skeleton h-3 rounded-full" style={{ width: `${w}%`, animationDelay: `${i * 150}ms` }} />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : frameSize ? (
           <div
             style={{
               width: (frameSize.width + 20) * scale,
@@ -309,21 +333,31 @@ export function PreviewFrame({
             }}
           >
             <div
-              className="origin-top-left overflow-hidden rounded-[2rem] border-[10px] border-foreground/85 bg-white shadow-elevated"
+              className="device-bezel relative origin-top-left overflow-hidden rounded-[2.4rem] border-[10px] bg-white"
               style={{
                 width: frameSize.width + 20,
                 height: frameSize.height + 20,
                 transform: `scale(${scale})`,
               }}
             >
+              {device === "mobile" && (
+                <span aria-hidden className="device-notch absolute left-1/2 top-2 z-10 h-6 w-28 -translate-x-1/2 rounded-full" />
+              )}
               {iframe}
             </div>
           </div>
         ) : (
-          <div className="size-full bg-white">{iframe}</div>
+          <div className="preview-window relative size-full overflow-hidden rounded-xl bg-white">
+            {iframe}
+          </div>
         )}
-        {frameSize && (
-          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full border border-border bg-background/90 px-2.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+        {hasFiles && building && (
+          <div className="pointer-events-none absolute right-5 top-5 z-10 inline-flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-elevated backdrop-blur">
+            <Loader2 className="size-3.5 animate-spin text-primary" /> Updating preview
+          </div>
+        )}
+        {frameSize && hasFiles && (
+          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full border border-border bg-background/90 px-2.5 py-0.5 font-mono text-[10px] text-muted-foreground backdrop-blur">
             {frameSize.width} × {frameSize.height} · {Math.round(scale * 100)}%
           </span>
         )}
