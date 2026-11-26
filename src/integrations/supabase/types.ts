@@ -1,0 +1,761 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18"
+  }
+  public: {
+    Tables: {
+      chats: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          messages: Json
+          model: string
+          provider: string
+          updated_at: string
+          url_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id: string
+          messages?: Json
+          model?: string
+          provider?: string
+          updated_at?: string
+          url_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          messages?: Json
+          model?: string
+          provider?: string
+          updated_at?: string
+          url_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cloud_files: {
+        Row: {
+          app_user_id: string | null
+          created_at: string
+          id: string
+          mime_type: string
+          owner_id: string
+          path: string
+          project_id: string
+          size_bytes: number
+        }
+        Insert: {
+          app_user_id?: string | null
+          created_at?: string
+          id?: string
+          mime_type?: string
+          owner_id: string
+          path: string
+          project_id: string
+          size_bytes?: number
+        }
+        Update: {
+          app_user_id?: string | null
+          created_at?: string
+          id?: string
+          mime_type?: string
+          owner_id?: string
+          path?: string
+          project_id?: string
+          size_bytes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cloud_files_app_user_id_fkey"
+            columns: ["app_user_id"]
+            isOneToOne: false
+            referencedRelation: "cloud_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cloud_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "cloud_projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      cloud_projects: {
+        Row: {
+          api_key: string
+          backend: string
+          created_at: string
+          owner_id: string
+          project_id: string
+          supabase_key: string | null
+          supabase_organization_slug: string | null
+          supabase_project_name: string | null
+          supabase_project_ref: string | null
+          supabase_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          api_key: string
+          backend?: string
+          created_at?: string
+          owner_id: string
+          project_id: string
+          supabase_key?: string | null
+          supabase_organization_slug?: string | null
+          supabase_project_name?: string | null
+          supabase_project_ref?: string | null
+          supabase_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          backend?: string
+          created_at?: string
+          owner_id?: string
+          project_id?: string
+          supabase_key?: string | null
+          supabase_organization_slug?: string | null
+          supabase_project_name?: string | null
+          supabase_project_ref?: string | null
+          supabase_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cloud_projects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cloud_rows: {
+        Row: {
+          app_user_id: string | null
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string
+          project_id: string
+          table_name: string
+          updated_at: string
+        }
+        Insert: {
+          app_user_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id: string
+          project_id: string
+          table_name: string
+          updated_at?: string
+        }
+        Update: {
+          app_user_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string
+          project_id?: string
+          table_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cloud_rows_app_user_id_fkey"
+            columns: ["app_user_id"]
+            isOneToOne: false
+            referencedRelation: "cloud_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cloud_rows_project_id_table_name_fkey"
+            columns: ["project_id", "table_name"]
+            isOneToOne: false
+            referencedRelation: "cloud_tables"
+            referencedColumns: ["project_id", "name"]
+          },
+        ]
+      }
+      cloud_tables: {
+        Row: {
+          columns: Json
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          project_id: string
+          read_access: string
+          updated_at: string
+          write_access: string
+        }
+        Insert: {
+          columns?: Json
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          project_id: string
+          read_access?: string
+          updated_at?: string
+          write_access?: string
+        }
+        Update: {
+          columns?: Json
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          project_id?: string
+          read_access?: string
+          updated_at?: string
+          write_access?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cloud_tables_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "cloud_projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      cloud_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          owner_id: string
+          password_hash: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          owner_id: string
+          password_hash: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          owner_id?: string
+          password_hash?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cloud_users_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "cloud_projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      legacy_user_imports: {
+        Row: {
+          bio: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          is_admin: boolean
+          legacy_uid: string
+          photo_url: string
+          username: string
+        }
+        Insert: {
+          bio?: string
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          display_name?: string
+          email: string
+          id?: string
+          is_admin?: boolean
+          legacy_uid: string
+          photo_url?: string
+          username?: string
+        }
+        Update: {
+          bio?: string
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+          is_admin?: boolean
+          legacy_uid?: string
+          photo_url?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          bio: string
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          legacy_uid: string | null
+          photo_url: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          bio?: string
+          created_at?: string
+          display_name?: string
+          email?: string
+          id: string
+          legacy_uid?: string | null
+          photo_url?: string
+          updated_at?: string
+          username?: string
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+          legacy_uid?: string | null
+          photo_url?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      project_files: {
+        Row: {
+          content: string
+          id: string
+          mime_type: string
+          owner_id: string
+          project_id: string
+          relative_path: string
+          size_bytes: number
+          storage_location: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          id: string
+          mime_type?: string
+          owner_id: string
+          project_id: string
+          relative_path: string
+          size_bytes?: number
+          storage_location?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          id?: string
+          mime_type?: string
+          owner_id?: string
+          project_id?: string
+          relative_path?: string
+          size_bytes?: number
+          storage_location?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_secrets: {
+        Row: {
+          encrypted_value: string
+          name: string
+          owner_id: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          encrypted_value: string
+          name: string
+          owner_id: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          encrypted_value?: string
+          name?: string
+          owner_id?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_secrets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          id: string
+          last_active_at: string
+          last_stopped_at: string | null
+          migration_status: string
+          name: string
+          owner_id: string
+          sandbox_id: string | null
+          sandbox_status: string
+          storage_backend: string
+          total_bytes: number
+          total_files: number
+          updated_at: string
+          volume_id: string | null
+          volume_name: string
+          volume_subpath: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          last_active_at?: string
+          last_stopped_at?: string | null
+          migration_status?: string
+          name?: string
+          owner_id: string
+          sandbox_id?: string | null
+          sandbox_status?: string
+          storage_backend?: string
+          total_bytes?: number
+          total_files?: number
+          updated_at?: string
+          volume_id?: string | null
+          volume_name?: string
+          volume_subpath?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          last_stopped_at?: string | null
+          migration_status?: string
+          name?: string
+          owner_id?: string
+          sandbox_id?: string | null
+          sandbox_status?: string
+          storage_backend?: string
+          total_bytes?: number
+          total_files?: number
+          updated_at?: string
+          volume_id?: string | null
+          volume_name?: string
+          volume_subpath?: string
+        }
+        Relationships: []
+      }
+      supabase_oauth_connections: {
+        Row: {
+          access_token_ciphertext: string
+          created_at: string
+          expires_at: string
+          refresh_token_ciphertext: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token_ciphertext: string
+          created_at?: string
+          expires_at: string
+          refresh_token_ciphertext: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token_ciphertext?: string
+          created_at?: string
+          expires_at?: string
+          refresh_token_ciphertext?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      supabase_oauth_states: {
+        Row: {
+          code_verifier_ciphertext: string
+          created_at: string
+          expires_at: string
+          project_id: string
+          redirect_uri: string
+          state_hash: string
+          user_id: string
+        }
+        Insert: {
+          code_verifier_ciphertext: string
+          created_at?: string
+          expires_at: string
+          project_id: string
+          redirect_uri: string
+          state_hash: string
+          user_id: string
+        }
+        Update: {
+          code_verifier_ciphertext?: string
+          created_at?: string
+          expires_at?: string
+          project_id?: string
+          redirect_uri?: string
+          state_hash?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supabase_oauth_states_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workspace_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          id: string
+          last_heartbeat_at: string
+          owner_id: string
+          project_id: string
+          sandbox_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          id: string
+          last_heartbeat_at?: string
+          owner_id: string
+          project_id: string
+          sandbox_id?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          last_heartbeat_at?: string
+          owner_id?: string
+          project_id?: string
+          sandbox_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+    }
+    Enums: {
+      app_role: "admin" | "moderator" | "user"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
+  },
+} as const
