@@ -1,5 +1,11 @@
 import { useMemo, useRef, useState } from "react";
 import {
+  BarChart3,
+  ChevronDown,
+  FolderOpen,
+  MoreHorizontal,
+  Plug,
+  Users,
   Check,
   Cloud,
   Code2,
@@ -19,6 +25,12 @@ import { toast } from "sonner";
 import { createProjectZip, downloadFile, makeWorkspaceFile } from "@/lib/workspace-tools";
 import { starterTemplates } from "@/lib/starter-templates";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ProjectLibrary } from "@/components/ProjectLibrary";
 import { DaytonaTerminal } from "@/components/DaytonaTerminal";
 import { PreviewFrame, type PreviewCloud } from "@/components/workbench/PreviewFrame";
@@ -62,8 +74,16 @@ interface WorkbenchPanelProps {
 const TABS: Array<{ id: WorkbenchTab; label: string; icon: typeof Eye }> = [
   { id: "preview", label: "Preview", icon: Eye },
   { id: "code", label: "Code", icon: Code2 },
-  { id: "cloud", label: "Cloud", icon: Database },
+];
+
+type MoreItem = "analytics" | "database" | "users" | "files" | "terminal" | "connection";
+const MORE: Array<{ id: MoreItem; label: string; icon: typeof Eye }> = [
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "database", label: "Database", icon: Database },
+  { id: "users", label: "Users", icon: Users },
+  { id: "files", label: "Storage", icon: FolderOpen },
   { id: "terminal", label: "Terminal", icon: TerminalSquare },
+  { id: "connection", label: "Connect", icon: Plug },
 ];
 
 export function WorkbenchPanel(props: WorkbenchPanelProps) {
@@ -81,6 +101,7 @@ export function WorkbenchPanel(props: WorkbenchPanelProps) {
     persisted,
   } = props;
   const [selectedPath, setSelectedPath] = useState("");
+  const [cloudSection, setCloudSection] = useState<Exclude<MoreItem, "terminal">>("database");
   const [undo, setUndo] = useState<FileMap[]>([]);
   const [redo, setRedo] = useState<FileMap[]>([]);
   const uploadRef = useRef<HTMLInputElement>(null);
@@ -286,6 +307,45 @@ export function WorkbenchPanel(props: WorkbenchPanelProps) {
             )}
           </button>
         ))}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "cloud" || tab === "terminal"}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                tab === "cloud" || tab === "terminal"
+                  ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <MoreHorizontal className="size-3.5" />
+              {tab === "terminal"
+                ? "Terminal"
+                : tab === "cloud"
+                  ? (MORE.find((m) => m.id === cloudSection)?.label ?? "More")
+                  : "More"}
+              <ChevronDown className="size-3 opacity-60" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-48">
+            {MORE.map(({ id, label, icon: Icon }) => (
+              <DropdownMenuItem
+                key={id}
+                onSelect={() => {
+                  if (id === "terminal") onTabChange("terminal");
+                  else {
+                    setCloudSection(id);
+                    onTabChange("cloud");
+                  }
+                }}
+              >
+                <Icon className="size-4" />
+                {label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {tab === "terminal" ? (
@@ -297,6 +357,8 @@ export function WorkbenchPanel(props: WorkbenchPanelProps) {
         />
       ) : tab === "cloud" ? (
         <CloudPanel
+          key={cloudSection}
+          initialSection={cloudSection}
           projectId={projectId}
           status={props.cloud}
           run={props.runCloud}

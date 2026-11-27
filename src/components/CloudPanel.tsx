@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  BarChart3,
   Check,
   Cloud,
   Database,
@@ -26,7 +27,8 @@ import {
 } from "@/lib/cloud-core";
 import type { CloudAction, CloudResult } from "@/lib/cloud.functions";
 
-type Section = "database" | "users" | "files" | "connection";
+export type CloudSection = Section;
+type Section = "analytics" | "database" | "users" | "files" | "connection";
 type ColumnType = CloudTableDef["columns"][number]["type"];
 
 interface CloudPanelProps {
@@ -42,10 +44,11 @@ const ACCESS_LABEL: Record<CloudAccess, string> = {
   owner: "Only the creator",
 };
 const SECTIONS: Array<{ id: Section; label: string; icon: typeof Database }> = [
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "database", label: "Database", icon: Table2 },
   { id: "users", label: "Users", icon: Users },
   { id: "files", label: "Storage", icon: FolderOpen },
-  { id: "connection", label: "Connection", icon: Plug },
+  { id: "connection", label: "Connect", icon: Plug },
 ];
 const fieldBase =
   "h-8 rounded-lg border border-border bg-background px-2.5 text-xs outline-none focus:border-primary";
@@ -71,8 +74,8 @@ function parseValue(type: ColumnType, text: string): unknown {
   return text;
 }
 
-export function CloudPanel({ projectId, status, run, ensureProject }: CloudPanelProps) {
-  const [section, setSection] = useState<Section>("database");
+export function CloudPanel({ projectId, status, run, ensureProject, initialSection }: CloudPanelProps & { initialSection?: Section }) {
+  const [section, setSection] = useState<Section>(initialSection ?? "database");
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState("");
   const [rows, setRows] = useState<NonNullable<CloudResult["rows"]>>([]);
@@ -257,7 +260,41 @@ export function CloudPanel({ projectId, status, run, ensureProject }: CloudPanel
         {busy && <Loader2 className="size-3.5 animate-spin text-primary" />}
       </div>
 
-      {section === "connection" ? (
+      {section === "analytics" ? (
+        <div className="thin-scroll flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="mx-auto grid max-w-2xl gap-3 sm:grid-cols-3">
+            {[
+              { label: "Tables", value: tables.length, icon: Table2 },
+              { label: "Users", value: status?.userCount ?? 0, icon: Users },
+              { label: "Files", value: status?.fileCount ?? 0, icon: FolderOpen },
+            ].map(({ label, value, icon: Icon }) => (
+              <div key={label} className="rounded-2xl border border-border bg-background p-5 shadow-sm">
+                <Icon className="size-4 text-primary" />
+                <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
+                <p className="text-xs text-muted-foreground">{label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mx-auto mt-3 max-w-2xl rounded-2xl border border-border bg-background p-5 shadow-sm">
+            <p className="text-sm font-medium">Rows per table</p>
+            <div className="mt-3 space-y-2">
+              {tables.length === 0 && <p className="text-xs text-muted-foreground">No tables yet.</p>}
+              {tables.map((t) => {
+                const max = Math.max(1, ...tables.map((x) => x.rows ?? 0));
+                return (
+                  <div key={t.name} className="grid grid-cols-[120px_minmax(0,1fr)_40px] items-center gap-2 text-xs">
+                    <span className="truncate font-mono">{t.name}</span>
+                    <span className="h-2 overflow-hidden rounded-full bg-muted">
+                      <span className="block h-full rounded-full bg-primary" style={{ width: `${((t.rows ?? 0) / max) * 100}%` }} />
+                    </span>
+                    <span className="text-right text-muted-foreground">{t.rows ?? 0}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : section === "connection" ? (
         <div className="thin-scroll flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
             <div className={`h-1 ${ownSupabase ? "bg-success" : "bg-brand-accent"}`} />
