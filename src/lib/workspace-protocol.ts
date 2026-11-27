@@ -61,5 +61,12 @@ export function streamedFiles(text: string, completeOnly = false): Record<string
 }
 
 export function visibleAssistantText(text: string): string {
-  return text.replace(/<(secretRequest|cloudSchema)>[\s\S]*?(?:<\/\1>|$)/g, "");
+  return text.replace(/<(secretRequest|cloudSchema|thinking)>[\s\S]*?(?:<\/\1>|$)/g, "");
+}
+
+/** Reasoning block the assistant writes first; `done` is false while it is still streaming. */
+export function extractThinking(text: string): { text: string; done: boolean } | null {
+  const match = /<thinking>([\s\S]*?)(<\/thinking>|$)/.exec(text);
+  if (!match) return null;
+  return { text: (match[1] ?? "").trim(), done: Boolean(match[2]) };
 }
