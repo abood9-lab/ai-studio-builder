@@ -1,3 +1,4 @@
+import { queueTerminalCommands } from "@/lib/terminal-queue";
 import { memo, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -16,6 +17,7 @@ import {
   KeyRound,
   Loader2,
   PanelRightOpen,
+  Play,
 } from "lucide-react";
 import { toast } from "sonner";
 import { parseArtifactsFromText } from "@/lib/artifact-parser";
@@ -303,6 +305,15 @@ function ChatMessageItemBase({
                       <Terminal className="size-3" />
                     </span>
                     Command
+                    {!active && (
+                      <button
+                        type="button"
+                        onClick={() => queueTerminalCommands(command.split("\n"))}
+                        className="ml-auto inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-0.5 text-[11px] font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                      >
+                        <Play className="size-3" /> Run in terminal
+                      </button>
+                    )}
                   </div>
                   <pre className="overflow-x-auto rounded-lg bg-foreground px-3 py-2 font-mono text-[11px] text-background">
                     <span className="opacity-50">$ </span>

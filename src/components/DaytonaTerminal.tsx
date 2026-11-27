@@ -11,6 +11,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { sandboxAction } from "@/lib/workspace.functions";
+import { TERMINAL_EVENT, takeTerminalCommands } from "@/lib/terminal-queue";
 
 type LineKind = "command" | "output" | "error" | "info";
 interface TerminalLine {
@@ -186,6 +187,32 @@ export function DaytonaTerminal({
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   };
+
+  // Commands sent from chat ("Run in terminal") wait until the sandbox is running, then run in order.
+  const runRef = useRef(run);
+  runRef.current = run;
+  const [queued, setQueued] = useState<string[]>([]);
+  useEffect(() => {
+    const take = () => {
+      const next = takeTerminalCommands();
+      if (next.length) setQueued((previous) => [...previous, ...next]);
+    };
+    take();
+    window.addEventListener(TERMINAL_EVENT, take);
+    return () => window.removeEventListener(TERMINAL_EVENT, take);
+  }, []);
+  useEffect(() => {
+    if (!queued.length || busy) return;
+    if (state !== "started") {
+      if (state === "none" || state === "stopped" || state === "archived") {
+        push("info", `${queued.length} command(s) waiting. Press Connect to start the sandbox.`);
+      }
+      return;
+    }
+    const [first, ...rest] = queued;
+    setQueued(rest);
+    if (first) void runRef.current(first);
+  }, [queued, busy, state, push]);
 
   const running = state === "started";
   const changing = TRANSITIONAL.includes(state);

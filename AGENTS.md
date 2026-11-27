@@ -31,3 +31,4 @@ use the editor.
 
 - Backend runs on Lovable Cloud (imported from the external repo); Google sign-in goes through the managed `lovable.auth` helper, never `supabase.auth.signInWithOAuth`.
 - The sign-in page demo video is a static asset in public/videos, recorded from an in-app animated scene; re-record it instead of using AI-generated footage so it matches the real UI.
+- Chat-to-terminal commands go through src/lib/terminal-queue.ts (module queue + window event) because the Daytona terminal is unmounted until its tab opens.

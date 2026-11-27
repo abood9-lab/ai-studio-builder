@@ -47,6 +47,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { ModelSelector } from "@/components/ModelSelector";
 import { ProfileModal } from "@/components/ProfileModal";
 import { WorkbenchPanel, type WorkbenchTab } from "@/components/WorkbenchPanel";
+import { TERMINAL_EVENT } from "@/lib/terminal-queue";
 import { PlanningModal, type PlanningAnswer } from "@/components/PlanningModal";
 import { ProjectSecretsModal } from "@/components/ProjectSecretsModal";
 import { ChatMessageItem } from "@/components/chat/ChatMessageItem";
@@ -132,6 +133,14 @@ export function ChatWorkspace({
   const [workbenchOpen, setWorkbenchOpen] = useState(false);
   const [tab, setTab] = useState<WorkbenchTab>("preview");
   const [theme, setTheme] = useState<"light" | "dark">("dark");
+  useEffect(() => {
+    const open = () => {
+      setWorkbenchOpen(true);
+      setTab("terminal");
+    };
+    window.addEventListener(TERMINAL_EVENT, open);
+    return () => window.removeEventListener(TERMINAL_EVENT, open);
+  }, []);
 
   const [history, setHistory] = useState<ChatSession[]>([]);
   const [historySearch, setHistorySearch] = useState("");
